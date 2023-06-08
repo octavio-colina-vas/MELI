@@ -1,54 +1,55 @@
-const HomePage = require("../pages/home.page");
-const assert = require("assert");
+const HomePage = require('../pages/home.page');
+const assert = require('assert');
 
+describe('MercadoLibre search suite', () => {
+  beforeEach(async () => {
+    await browser.url('/');
+  });
 
-describe("MercadoLibre search suite", () => {
+  it('should enter to vehiculos category', async () => {
+    await HomePage.categoriasLink.moveTo();
 
-    beforeEach(async () => {
-        await browser.url("/");
-    })
+    await HomePage.vehiculosLink.click();
 
-    it("should enter to vehiculos category", async () => {
-        await HomePage.categoriasLink.moveTo();
+    await browser.pause(1000);
 
-        await HomePage.vehiculosLink.click();
+    assert.equal(
+      await browser.getUrl(),
+      'https://www.mercadolibre.com.ar/c/autos-motos-y-otros#menu=categories',
+      'The URL is not the same'
+    );
+  });
+  it('should enter to vehiculos category and perform a search', async () => {
+    await HomePage.categoriasLink.moveTo();
 
-        await browser.pause(1000);
+    await HomePage.vehiculosLink.click();
 
-        assert.equal(await browser.getUrl(), "https://www.mercadolibre.com.ar/c/autos-motos-y-otros#menu=categories", "The URL is not the same")
-    })
-    it('should enter to vehiculos category and perform a search', async () => {
+    await HomePage.searchFor('bora');
 
-        await HomePage.categoriasLink.moveTo();
+    await browser.pause(1000);
 
-        await HomePage.vehiculosLink.click();        
+    assert.equal(
+      await browser.getUrl(),
+      'https://vehiculos.mercadolibre.com.ar/bora#D[A:bora,MLA1743]',
+      'The URL is not the same'
+    );
+  });
 
-        await HomePage.searchFor("bora")
+  it.only('should search in a specific area', async () => {
+    await HomePage.categoriasLink.moveTo();
 
-        await browser.pause(1000);
+    await HomePage.vehiculosLink.click();
 
-        assert.equal(await browser.getUrl(), "https://vehiculos.mercadolibre.com.ar/bora#D[A:bora,MLA1743]", "The URL is not the same")
+    await HomePage.searchFor('bora');
 
+    await HomePage.cordobaFilter.scrollIntoView();
 
-    })
+    await browser.pause(6000);
 
-    it('should search in a specific area', async () => {
-        
+    await HomePage.cordobaFilter.click();
 
-        await HomePage.categoriasLink.moveTo();
+    await browser.pause(3000);
 
-        await HomePage.vehiculosLink.click();        
-
-        await HomePage.searchFor("bora");
-
-        await HomePage.cordobaFilter.click();
-
-        await browser.pause(2000);
-
-        assert.equal(await HomePage.cordobaPill.isDisplayed(), true, "Cordoba filter not applied");
-
-        
-
-
-    })
-})
+    assert.equal(await HomePage.cordobaPill.isDisplayed(), true, 'Cordoba filter not applied');
+  });
+});
